@@ -1,3 +1,12 @@
+Endless-2D-Runner/
+│
+├─ main.py            # main game loop
+├─ player.py          # player class
+├─ obstacle.py        # obstacle class
+├─ settings.py        # constants (screen size, speed, colors)
+├─ assets/            # images, sounds, fonts
+└─ utils.py           # helper functions (optional)
+
 Step 2: Basic Game Loop
 
 Initialize Pygame, screen, clock.
