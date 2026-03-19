@@ -362,6 +362,7 @@ class Game:
         self.last_coin_spawn  = now + 3000
         self.last_pup_spawn   = now + 8000
         self.is_new_best      = False
+        self.sounds.start_music()
 
     # ── Main loop entry ───────────────────────────────────────
 
@@ -406,6 +407,7 @@ class Game:
                     self.state = self.STATE_PLAYING
                 elif action == "menu":
                     self.state = self.STATE_MENU
+                    self.sounds.start_music()
 
             # ── Game over ─────────────────────────────────────
             elif self.state == self.STATE_GAMEOVER:
@@ -415,6 +417,7 @@ class Game:
                     self.state = self.STATE_PLAYING
                 elif action == "menu":
                     self.state = self.STATE_MENU
+                    self.sounds.start_music()
 
     # ── Update ────────────────────────────────────────────────
 
