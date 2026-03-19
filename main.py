@@ -270,12 +270,14 @@ class SoundManager:
 
         self.sfx = {
             "jump":      load_sound("assets/sounds/jump.wav"),
+            "slide":     load_sound("assets/sounds/slide.wav"),
             "hit":       load_sound("assets/sounds/hit.wav"),
             "coin":      load_sound("assets/sounds/coin.wav"),
             "milestone": load_sound("assets/sounds/milestone.wav"),
             "powerup":   load_sound("assets/sounds/powerup.wav"),
+            "gameover":  load_sound("assets/sounds/gameover.wav"),
         }
-        self._music_loaded = load_music("assets/sounds/music.ogg")
+        self._music_loaded = load_music("assets/sounds/music.wav")
         self.music_playing = False
 
     def play(self, name: str):
@@ -501,7 +503,9 @@ class Game:
             self.last_milestone = milestone
 
     def _trigger_gameover(self):
+        self.sounds.stop_music()
         self.sounds.play("hit")
+        self.sounds.play("gameover")
         if self.score > self.highscore:
             self.highscore  = self.score
             self.is_new_best = True
