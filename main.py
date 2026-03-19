@@ -1,13 +1,3 @@
-# main.py — Endless 2D Runner  (Steps 2 – 10 fully integrated)
-#
-# Run:  python main.py
-# Deps: pip install pygame
-#
-# File structure expected:
-#   main.py / player.py / obstacle.py / settings.py / utils.py
-#   assets/images/   ← optional PNG sprites
-#   assets/sounds/   ← optional WAV/OGG sound effects
-#   assets/fonts/    ← optional TTF fonts
 
 import sys
 import math
