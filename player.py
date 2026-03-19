@@ -55,6 +55,7 @@ class Player(pygame.sprite.Sprite):
 
         # ── Sounds ────────────────────────────────────────────
         self.sfx_jump = load_sound("assets/sounds/jump.wav")
+        self.sfx_slide = load_sound("assets/sounds/slide.wav")
 
     # ── Private helpers ───────────────────────────────────────
 
@@ -116,6 +117,7 @@ class Player(pygame.sprite.Sprite):
             self.is_sliding  = True
             self.slide_timer = 1000  # ms
             self.anim_state  = "slide"
+            if self.sfx_slide: self.sfx_slide.play()
             
             old_bottom = self.rect.bottom
             self.rect.height = PLAYER_H // 2
