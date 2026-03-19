@@ -22,9 +22,10 @@ class Obstacle(pygame.sprite.Sprite):
     """
 
     VARIETIES = [
-        {"w": 30, "h": 80, "color": C_OBS,          "image": "assets/images/obs_spike.png"},
-        {"w": 55, "h": 45, "color": C_OBS2,          "image": "assets/images/obs_block.png"},
-        {"w": 40, "h": 65, "color": (46, 139, 87),   "image": "assets/images/obs_cactus.png"},
+        {"w": 30, "h": 80, "color": C_OBS,          "image": "assets/images/obs_spike.png", "type": "ground"},
+        {"w": 55, "h": 45, "color": C_OBS2,          "image": "assets/images/obs_block.png", "type": "ground"},
+        {"w": 40, "h": 65, "color": (46, 139, 87),   "image": "assets/images/obs_cactus.png", "type": "ground"},
+        {"w": 45, "h": 40, "color": (200, 50, 200),  "image": "assets/images/obs_fly.png", "type": "high"},
     ]
 
     def __init__(self, speed: float):
@@ -40,7 +41,10 @@ class Obstacle(pygame.sprite.Sprite):
             img = self._make_shape(variety["color"], w, h)
 
         self.image = img
-        self.rect  = self.image.get_rect(bottomleft=(SCREEN_WIDTH + 10, GROUND_Y))
+        if variety.get("type") == "high":
+            self.rect  = self.image.get_rect(bottomleft=(SCREEN_WIDTH + 10, GROUND_Y - 50))
+        else:
+            self.rect  = self.image.get_rect(bottomleft=(SCREEN_WIDTH + 10, GROUND_Y))
 
         # Slightly smaller hit-box for fairness
         self.hitbox = self.rect.inflate(-10, -6)
