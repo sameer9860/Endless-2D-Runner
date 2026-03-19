@@ -105,7 +105,6 @@ class Player(pygame.sprite.Sprite):
         return {
             "run":    run_frames,
             "jump":   jump_frames,
-            "shield": [shield_frame],
             "slide":  slide_frames,
         }
 
@@ -187,7 +186,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.height = PLAYER_H
                 self.rect.bottom = old_bottom
                 if not self.is_jumping:
-                    self.anim_state = "shield" if self.has_shield else "run"
+                    self.anim_state = "run"
 
     def _apply_physics(self):
         self.vel_y     += GRAVITY
@@ -197,7 +196,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = GROUND_Y
             self.vel_y       = 0
             self.is_jumping  = False
-            self.anim_state  = "shield" if self.has_shield else ("slide" if self.is_sliding else "run")
+            self.anim_state  = "slide" if self.is_sliding else "run"
             # restore jump count when landing
             self.jumps_left  = 2 if self.has_double_jump else 1
 
