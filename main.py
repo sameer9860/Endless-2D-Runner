@@ -194,10 +194,11 @@ class MenuScreen:
         lines = [
             ("HOW TO PLAY", self.fonts["med"], C_ACCENT, 140),
             ("SPACE / ↑  — Jump (hold for higher)", self.fonts["sm"], C_TEXT, 210),
-            ("Double-jump with 2↑ power-up",        self.fonts["sm"], C_TEXT, 245),
-            ("Collect  coins  for bonus points",     self.fonts["sm"], C_TEXT, 280),
-            ("SHD  shield survives one hit",         self.fonts["sm"], C_TEXT, 315),
-            ("Speed increases as your score climbs", self.fonts["sm"], C_TEXT_DIM, 365),
+            ("↓          — Slide / Duck",             self.fonts["sm"], C_TEXT, 240),
+            ("Double-jump with 2↑ power-up",        self.fonts["sm"], C_TEXT, 270),
+            ("Collect  coins  for bonus points",     self.fonts["sm"], C_TEXT, 300),
+            ("SHD  shield survives one hit",         self.fonts["sm"], C_TEXT, 330),
+            ("Speed increases as your score climbs", self.fonts["sm"], C_TEXT_DIM, 375),
             ("[ click or press any key to go back ]",self.fonts["xs"], C_TEXT_DIM, 420),
         ]
         for text, font, color, y in lines:
@@ -391,6 +392,8 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key in (pygame.K_SPACE, pygame.K_UP):
                         self.player.jump()
+                    elif event.key == pygame.K_DOWN:
+                        self.player.slide()
                     elif event.key == pygame.K_ESCAPE:
                         self.state = self.STATE_PAUSED
 
