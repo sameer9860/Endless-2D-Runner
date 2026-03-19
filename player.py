@@ -20,11 +20,7 @@ class Player(pygame.sprite.Sprite):
     - First jump
     - Double jump (if double_jump power-up is active)
     - Shield active (survives one collision)
-
-    Animation
-    ---------
-    The player cycles through frames stored in self.frames[state].
-    If no image assets are found, a coloured rectangle is used instead.
+    - Sliding (height halved for short duration)
     """
 
     ANIM_SPEED = 6          # frames per animation tick
@@ -48,6 +44,9 @@ class Player(pygame.sprite.Sprite):
         self.is_jumping  = False
         self.jumps_left  = 1          # increases to 2 with double-jump power-up
 
+        self.is_sliding  = False
+        self.slide_timer = 0
+
         # ── Power-up timers (ms, 0 = inactive) ────────────────
         self.shield_timer      = 0
         self.double_jump_timer = 0
@@ -60,10 +59,6 @@ class Player(pygame.sprite.Sprite):
     # ── Private helpers ───────────────────────────────────────
 
     def _load_frames(self) -> dict:
-        """
-        Try to load sprite-sheet frames from assets/images/.
-        Falls back to a solid-colour surface if files are missing.
-        """
         def placeholder(color):
             surf = pygame.Surface((PLAYER_W, PLAYER_H), pygame.SRCALPHA)
             pygame.draw.rect(surf, color, surf.get_rect(), border_radius=10)
@@ -88,13 +83,11 @@ class Player(pygame.sprite.Sprite):
         jump_frame    = placeholder(jump_color)
         shield_frame  = placeholder(shield_col)
 
-        # Attempt real asset loading (images named run_0.png, run_1.png, jump_0.png)
+        # Attempt real asset loading
         real_run = []
         for i in range(4):
             path = f"assets/images/player_run_{i}.png"
             img = load_image(path, (PLAYER_W, PLAYER_H))
-            # load_image returns magenta placeholder if missing — keep the
-            # built-in placeholder instead (it looks better than solid magenta)
             is_placeholder = (img.get_at((0, 0))[:3] == (220, 0, 220))
             if not is_placeholder:
                 real_run.append(img)
@@ -104,17 +97,38 @@ class Player(pygame.sprite.Sprite):
         real_jump = load_image("assets/images/player_jump_0.png", (PLAYER_W, PLAYER_H))
         jump_frames = [real_jump] if real_jump.get_at((0,0))[:3] != (220,0,220) else [jump_frame]
 
+        real_slide = load_image("assets/images/player_slide_0.png", (80, PLAYER_H // 2))
+        slide_frame = placeholder(run_color)
+        slide_frames = [real_slide] if real_slide.get_at((0,0))[:3] != (220,0,220) else [slide_frame]
+
         return {
             "run":    run_frames,
             "jump":   jump_frames,
             "shield": [shield_frame],
+            "slide":  slide_frames,
         }
 
     # ── Public API ────────────────────────────────────────────
 
+    def slide(self):
+        """Attempt to slide, shrinking height to pass under high obstacles."""
+        if not self.is_jumping and not self.is_sliding:
+            self.is_sliding  = True
+            self.slide_timer = 1000  # ms
+            self.anim_state  = "slide"
+            
+            old_bottom = self.rect.bottom
+            self.rect.height = PLAYER_H // 2
+            self.rect.bottom = old_bottom
+
     def jump(self):
         """Attempt a jump (or double-jump if power-up is active)."""
         if self.jumps_left > 0:
+            if self.is_sliding:
+                self.is_sliding = False
+                old_bottom = self.rect.bottom
+                self.rect.height = PLAYER_H
+                self.rect.bottom = old_bottom
             self.vel_y      = JUMP_STRENGTH
             self.is_jumping = True
             self.jumps_left -= 1
@@ -163,6 +177,16 @@ class Player(pygame.sprite.Sprite):
                 if self.jumps_left > 1:
                     self.jumps_left = 1
 
+        if self.is_sliding:
+            self.slide_timer -= dt
+            if self.slide_timer <= 0:
+                self.is_sliding = False
+                old_bottom = self.rect.bottom
+                self.rect.height = PLAYER_H
+                self.rect.bottom = old_bottom
+                if not self.is_jumping:
+                    self.anim_state = "shield" if self.has_shield else "run"
+
     def _apply_physics(self):
         self.vel_y     += GRAVITY
         self.rect.y    += int(self.vel_y)
@@ -171,7 +195,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = GROUND_Y
             self.vel_y       = 0
             self.is_jumping  = False
-            self.anim_state  = "shield" if self.has_shield else "run"
+            self.anim_state  = "shield" if self.has_shield else ("slide" if self.is_sliding else "run")
             # restore jump count when landing
             self.jumps_left  = 2 if self.has_double_jump else 1
 
